@@ -23,7 +23,9 @@ ENV/
 
 # Ignore all data in the ml_pipelines folder
 ml_pipelines/data/raw/*
+!ml_pipelines/data/raw/.gitkeep
 ml_pipelines/data/processed/*
+!ml_pipelines/data/processed/.gitkeep
 
 # Ignore specific heavy file types everywhere
 *.csv
