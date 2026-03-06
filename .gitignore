@@ -1,67 +1,78 @@
-# Dependencies
-node_modules/
+# ==========================================
+# 1. PYTHON BYTE-CODE & VIRTUAL ENVIRONMENTS
+# ==========================================
 
-# Build output
-.next/
-out/
-
-# Environment files
-.env
-.env.local
-.env*.local
-
-# Logs
-*.log
-npm-debug.log*
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.vscode/
-
-# Virtual environments
-venv/
-.venv/
-env/
-
-# Python cache
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
-# Environment variables (IMPORTANT for PostgreSQL credentials)
-.env
-.env.*
-!.env.example
+# C extensions
+*.so
 
-# IDE folders
-.vscode/
-.idea/
+# Virtual Environment
+# IMPORTANT: Replace 'venv' with the name of your virtual environment folder
+venv/
+env/
+ENV/
+.venv/
 
-# OS files
-.DS_Store
-Thumbs.db
+# ==========================================
+# 2. DATA FILES (The Heavy Stuff)
+# ==========================================
 
-# Logs
+# Ignore all data in the ml_pipelines folder
+ml_pipelines/data/raw/*
+ml_pipelines/data/processed/*
+
+# Ignore specific heavy file types everywhere
+*.csv
+*.mat
+*.zip
+*.parquet
+*.hdf5
+
+# EXCEPTION: Keep small sample datasets if you add them later
+# !ml_pipelines/data/raw/sample_data.csv
+
+# ==========================================
+# 3. ML MODELS & ARTIFACTS
+# ==========================================
+
+# Ignore serialized models (Pickles, Joblib, Tensorflow weights)
+# These can get large and are better stored in cloud storage (AWS S3) or Git LFS
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+
+# Ignore logs
 *.log
 
-# Build / packaging
-build/
-dist/
-*.egg-info/
+# ==========================================
+# 4. JUPYTER NOTEBOOKS
+# ==========================================
 
-# Coverage
-htmlcov/
-.coverage
-.coverage.*
+# Ipynb checkpoints (hidden files created by Jupyter)
+.ipynb_checkpoints/
 
-# Alembic (if you add migrations later)
-alembic/versions/__pycache__/
+# ==========================================
+# 5. IDE & EDITOR SETTINGS
+# ==========================================
 
-# PostgreSQL dumps
-*.sql
-*.dump
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# ==========================================
+# 6. ENVIRONMENT & SECRETS
+# ==========================================
+
+# Environment variables (Database URLs, API Keys)
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
