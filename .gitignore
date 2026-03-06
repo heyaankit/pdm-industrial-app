@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables (IMPORTANT for PostgreSQL credentials)
+.env
+.env.*
+!.env.example
+
+# IDE folders
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Alembic (if you add migrations later)
+alembic/versions/__pycache__/
+
+# PostgreSQL dumps
+*.sql
+*.dump
