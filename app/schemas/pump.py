@@ -31,24 +31,24 @@ class PumpUpdate(BaseModel):
 
 class PredictionLogCreate(BaseModel):
     pump_id: int = Field(..., ge=1)
-    temperature: int = Field(...)
-    vibration: int = Field(...)
-    pressure: int = Field(...)
-    flow_rate: int = Field(...)
-    rpm: int = Field(...)
-    operational_hours: int = Field(...)
+    temperature: float = Field(...)
+    vibration: float = Field(...)
+    pressure: float = Field(...)
+    flow_rate: float = Field(...)
+    rpm: float = Field(...)
+    operational_hours: float = Field(...)
 
 class PredictionLogResponse(BaseModel):
     id: int
     pump_id: int
-    temperature: int
-    vibration: int
-    pressure: int
-    flow_rate: int
-    rpm: int 
-    operational_hours: int 
-    maintenance_required: int 
-    confidence_score: int 
+    temperature: float
+    vibration: float
+    pressure: float
+    flow_rate: float
+    rpm: float
+    operational_hours: float
+    maintenance_required: float
+    confidence_score: float
     created_at: datetime
 
     model_config = {
@@ -57,9 +57,9 @@ class PredictionLogResponse(BaseModel):
 
 class PredictionLogUpdate(BaseModel):
     pump_id: Optional[int] = Field(..., ge=1)
-    temperature: Optional[int] = Field(...)
-    vibration: Optional[int] = Field(...)
-    pressure: Optional[int] = Field(...)
-    flow_rate: Optional[int] = Field(...)
-    rpm: Optional[int] = Field(...)
-    operational_hours: Optional[int] = Field(...)
+    temperature: Optional[float] = Field(...)
+    vibration: Optional[float] = Field(...)
+    pressure: Optional[float] = Field(...)
+    flow_rate: Optional[float] = Field(...)
+    rpm: Optional[float] = Field(...)
+    operational_hours: Optional[float] = Field(...)
