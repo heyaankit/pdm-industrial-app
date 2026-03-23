@@ -10,3 +10,5 @@ This is a personal log for myself for future reference of what did i learnt in t
 8. Okay, learnt Stratification, where **stratify=y** in train_test_split() ensures that training and testing set have the same proportion of target value.
 9. Learnt that i can also perform operation row-wise by using **.apply()** function. I don't have to make transform function especially for specific column.
 10. Partially learnt how to make new features, fried my brain.
+11. Okay with **@routers** I can make a cluster of APIs that serve one specific endpoint, and simplify our codebase further. This is something I will be using from upcoming project, need to learn it.
+12. Learnt that all the preprocessing steps applied in the notebook should be applied in here too, but obvious. Learnt how to do it. Still needed to learn how to use something called **joblib.dump** for applying the same preprocessing steps to raw input data.
