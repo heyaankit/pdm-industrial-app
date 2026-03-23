@@ -20,6 +20,7 @@ class Pump(Base):
     location = Column(String(100))
     installation_date = Column(DateTime, default=datetime.utcnow)
     status = Column(Enum(PumpStatus), nullable=False, default=PumpStatus.operational)
+    prediction_log = relationship('PumpPredictionLog', back_populates='pump', cascade='all, delete-orphan')
 
 # Prediction Log
 
@@ -41,3 +42,4 @@ class PumpPredictionLog(Base):
     maintenance_required = Column(Enum(MaintenanceRequired), nullable=False, default=MaintenanceRequired.no)
     confidence_score = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    pump = relationship('Pump', back_populates='pump_prediction_logs')
