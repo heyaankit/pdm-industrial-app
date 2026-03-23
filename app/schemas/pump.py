@@ -47,7 +47,7 @@ class PredictionLogResponse(BaseModel):
     flow_rate: float
     rpm: float
     operational_hours: float
-    maintenance_required: float
+    maintenance_required: int
     confidence_score: float
     created_at: datetime
 
