@@ -34,6 +34,14 @@ A full-stack predictive maintenance system for industrial pumps with a FastAPI b
 - **Recharts** - Data visualization
 - **TypeScript** - Type safety
 
+## App Screenshots
+
+![Dashboard](app_images/dashboard.png)
+
+![Pumps](app_images/pumps.png)
+
+View all screenshots: [app_images/](app_images/)
+
 ## Project Structure
 
 ```
@@ -108,14 +116,6 @@ The frontend runs at: **http://localhost:3000**
 Open your browser and go to **http://localhost:3000**
 
 The frontend is pre-configured to connect to the backend at **http://localhost:8000** (configured in `frontend/.env.local`).
-
-## App Screenshots
-
-![Dashboard](app_images/dashboard.png)
-
-![Pumps](app_images/pumps.png)
-
-View all screenshots: [app_images/](app_images/)
 
 ## API Endpoints
 
