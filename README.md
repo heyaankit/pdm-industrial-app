@@ -1,7 +1,5 @@
 # Predictive Maintenance API (PDM Industrial App)
 
-<img src="app_images/logo.svg" alt="PDM Logo" width="80" align="left">
-
 [![GitHub stars](https://img.shields.io/github/stars/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/network)
 [![GitHub issues](https://img.shields.io/github/issues/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/issues)
