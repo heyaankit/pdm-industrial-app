@@ -18,9 +18,9 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts';
 import { apiClient } from '@/lib/api';
 import { Pump, PumpPredictionLog } from '@/lib/types';
@@ -95,7 +95,7 @@ export default function DashboardPage() {
   const underMaintenance = pumps.filter((p) => p.status === 'Under Maintenance').length;
   const decommissioned = pumps.filter((p) => p.status === 'Decommissioned').length;
   const maintenanceAlerts = allLogs.filter((l) => l.maintenance_required === 'Yes').length;
-  const recentLogs = allLogs.slice(0, 10);
+  const recentLogs = allLogs.slice(0, 50);
 
   return (
     <div className="space-y-8">
@@ -273,69 +273,56 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Prediction Trend */}
-      {recentLogs.length > 1 && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h2 className="text-base font-semibold text-slate-800">Prediction Trend</h2>
-            <Link
-              href="/prediction-logs"
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
-            >
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="p-6">
+      {/* Prediction Trend by Pump */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h2 className="text-base font-semibold text-slate-800">Maintenance Alerts by Pump</h2>
+          <Link
+            href="/prediction-logs"
+            className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
+          >
+            View All <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="p-6">
+          {allLogs.length > 0 ? (
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={allLogs
-                    .slice()
-                    .reverse()
-                    .slice(-50)
-                    .map((log, idx) => ({
-                      name: `#${idx + 1}`,
-                      confidence: log.confidence_score * 100,
-                      temperature: log.temperature,
-                    }))}
-                  margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                  data={(() => {
+                    const pumpData: Record<number, { name: string; maintenance: number; total: number }> = {};
+                    allLogs.forEach((log) => {
+                      if (!pumpData[log.pump_id]) {
+                        pumpData[log.pump_id] = { name: `Pump ${log.pump_id}`, maintenance: 0, total: 0 };
+                      }
+                      pumpData[log.pump_id].total += 1;
+                      if (log.maintenance_required === 'Yes') {
+                        pumpData[log.pump_id].maintenance += 1;
+                      }
+                    });
+                    return Object.values(pumpData)
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((p) => ({
+                        name: p.name,
+                        alerts: p.maintenance,
+                        rate: Math.round((p.maintenance / p.total) * 100),
+                      }));
+                  })()}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#64748b" />
-                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 100]} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 160]} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="confidence"
-                    name="Confidence %"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    dot={{ fill: '#3b82f6', r: 2 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="temperature"
-                    name="Temperature (°C)"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    dot={{ fill: '#f59e0b', r: 2 }}
-                  />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="alerts" name="Maintenance Alerts" stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} />
+                  <Line type="monotone" dataKey="rate" name="Alert Rate %" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          ) : (
+            <p className="text-center text-slate-500 py-8">No prediction data available</p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
