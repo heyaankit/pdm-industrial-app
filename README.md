@@ -3,7 +3,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/network)
 [![GitHub issues](https://img.shields.io/github/issues/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/issues)
-[![License](https://img.shields.io/github/license/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/blob/main/LICENSE.md)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-white)](https://fastapi.tiangolo.com/)
