@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="url(#grad)"/>
+  
+  <!-- Gear/Industrial icon -->
+  <g fill="white" transform="translate(55, 55)">
+    <path d="M45 27.5v-10h-10v10c-4.5 1.5-7.5 5.5-7.5 10.5 0 5 3 9.5 7.5 11v13.5h10v-13.5c4.5-1.5 7.5-6 7.5-11 0-5-3-9-7.5-10.5z"/>
+    <circle cx="45" cy="45" r="15"/>
+  </g>
+  
+  <!-- Pulse/heartbeat line -->
+  <g fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="60,100 80,100 90,80 100,120 110,60 120,140 130,100 150,100"/>
+  </g>
+</svg>
