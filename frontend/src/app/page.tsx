@@ -16,8 +16,6 @@ import {
   Cell,
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -156,7 +154,7 @@ export default function DashboardPage() {
           <div className="p-6">
             {totalPumps > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="h-48">
+                <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -167,8 +165,8 @@ export default function DashboardPage() {
                         ]}
                         cx="50%"
                         cy="50%"
-                        innerRadius={40}
-                        outerRadius={70}
+                        innerRadius={50}
+                        outerRadius={90}
                         paddingAngle={3}
                         dataKey="value"
                       >
@@ -275,61 +273,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Maintenance Alerts by Pump */}
-      {maintenanceAlerts > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h2 className="text-base font-semibold text-slate-800">Maintenance Alerts by Pump</h2>
-            <Link
-              href="/prediction-logs"
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
-            >
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="p-6">
-            {(() => {
-              const pumpAlerts = allLogs
-                .filter(log => log.maintenance_required === 'Yes')
-                .reduce((acc, log) => {
-                  acc[log.pump_id] = (acc[log.pump_id] || 0) + 1;
-                  return acc;
-                }, {} as Record<number, number>);
-              
-              const chartData = Object.entries(pumpAlerts)
-                .map(([pumpId, count]) => ({
-                  name: `#${pumpId}`,
-                  alerts: count,
-                }))
-                .sort((a, b) => b.alerts - a.alerts)
-                .slice(0, 10);
-
-              return (
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis type="number" tick={{ fontSize: 12 }} stroke="#64748b" />
-                      <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#64748b" width={50} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#fff',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                        }}
-                      />
-                      <Bar dataKey="alerts" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-
-      {/* Prediction Trend Over Time */}
+      {/* Prediction Trend */}
       {recentLogs.length > 1 && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -342,7 +286,7 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="p-6">
-            <div className="h-64">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={allLogs
@@ -350,14 +294,16 @@ export default function DashboardPage() {
                     .reverse()
                     .slice(-50)
                     .map((log, idx) => ({
-                      index: idx,
-                      maintenance: log.maintenance_required === 'Yes' ? 1 : 0,
+                      name: `#${idx + 1}`,
+                      confidence: log.confidence_score * 100,
+                      temperature: log.temperature,
                     }))}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="index" tick={{ fontSize: 11 }} stroke="#64748b" />
-                  <YAxis tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 1]} ticks={[0, 1]} tickFormatter={(v) => v === 0 ? 'No' : 'Yes'} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#64748b" />
+                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 100]} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 160]} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
@@ -365,14 +311,24 @@ export default function DashboardPage() {
                       borderRadius: '8px',
                       fontSize: '12px',
                     }}
-                    formatter={(value: number) => [value === 1 ? 'Maintenance Required' : 'No Maintenance', '']}
                   />
                   <Line
-                    type="stepAfter"
-                    dataKey="maintenance"
-                    stroke="#ef4444"
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="confidence"
+                    name="Confidence %"
+                    stroke="#3b82f6"
                     strokeWidth={2}
-                    dot={{ fill: '#ef4444', r: 3 }}
+                    dot={{ fill: '#3b82f6', r: 2 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="temperature"
+                    name="Temperature (°C)"
+                    stroke="#f59e0b"
+                    strokeWidth={2}
+                    dot={{ fill: '#f59e0b', r: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
