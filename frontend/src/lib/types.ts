@@ -43,10 +43,28 @@ export interface PredictionLogCreateRequest {
   operational_hours: number;
 }
 
+export interface PredictionFactorDetail {
+  status: string;
+  value: number;
+  threshold: number;
+  reason: string;
+}
+
+export interface PredictionScoreDetail {
+  score: number;
+  threshold: number;
+  triggered: boolean;
+}
+
+export interface PredictionDetails {
+  factor_details: Record<string, PredictionFactorDetail>;
+  score_breakdown: Record<string, PredictionScoreDetail>;
+}
+
 export interface PredictionResponse {
   maintenance_required: string;
   confidence_score: number;
-  details: Record<string, unknown>;
+  details?: PredictionDetails;
 }
 
 export interface ApiError {

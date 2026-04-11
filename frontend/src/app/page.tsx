@@ -10,10 +10,31 @@ import {
   Wrench,
   ArrowRight,
 } from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 import { apiClient } from '@/lib/api';
 import { Pump, PumpPredictionLog } from '@/lib/types';
 import StatCard from '@/components/StatCard';
 import { formatDate, statusColor, maintenanceColor } from '@/lib/utils';
+
+const STATUS_COLORS = {
+  'Operational': '#10b981',
+  'Under Maintenance': '#f59e0b',
+  'Decommissioned': '#ef4444',
+};
+
+const MAINTENANCE_COLORS = ['#ef4444', '#10b981'];
 
 export default function DashboardPage() {
   const [pumps, setPumps] = useState<Pump[]>([]);
@@ -121,7 +142,6 @@ export default function DashboardPage() {
 
       {/* Status Distribution & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Fleet Status */}
         <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <h2 className="text-base font-semibold text-slate-800">Fleet Status Overview</h2>
@@ -133,72 +153,72 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="p-6">
-            {/* Status bar */}
             {totalPumps > 0 ? (
-              <div className="mb-6">
-                <div className="flex rounded-full overflow-hidden h-3 bg-slate-100">
-                  <div
-                    className="bg-emerald-500 transition-all"
-                    style={{ width: `${(operational / totalPumps) * 100}%` }}
-                  ></div>
-                  <div
-                    className="bg-amber-500 transition-all"
-                    style={{ width: `${(underMaintenance / totalPumps) * 100}%` }}
-                  ></div>
-                  <div
-                    className="bg-red-500 transition-all"
-                    style={{ width: `${(decommissioned / totalPumps) * 100}%` }}
-                  ></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Operational', value: operational },
+                          { name: 'Under Maintenance', value: underMaintenance },
+                          { name: 'Decommissioned', value: decommissioned },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={40}
+                        outerRadius={70}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {Object.keys(STATUS_COLORS).map((status) => (
+                          <Cell key={status} fill={STATUS_COLORS[status as keyof typeof STATUS_COLORS]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#fff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                        }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={36}
+                        iconType="circle"
+                        formatter={(value) => <span className="text-xs text-slate-600">{value}</span>}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className="flex justify-between mt-2 text-xs text-slate-500">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    Operational ({operational})
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                    Under Maint. ({underMaintenance})
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                    Decom. ({decommissioned})
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-slate-400 mb-6">No pumps registered yet.</p>
-            )}
 
-            {/* Pump list */}
-            {pumps.length > 0 ? (
-              <div className="space-y-2">
-                {pumps.slice(0, 5).map((pump) => (
-                  <Link
-                    key={pump.id}
-                    href={`/pumps/${pump.id}`}
-                    className="flex items-center justify-between px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Cog className="w-4 h-4 text-slate-400" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-700 group-hover:text-brand-600 transition-colors">
-                          {pump.name}
-                        </p>
-                        <p className="text-xs text-slate-400">{pump.location}</p>
-                      </div>
-                    </div>
-                    <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full border ${statusColor(pump.status)}`}
+                <div className="space-y-3">
+                  {[
+                    { status: 'Operational', count: operational, color: STATUS_COLORS['Operational'], desc: 'Running normally' },
+                    { status: 'Under Maintenance', count: underMaintenance, color: STATUS_COLORS['Under Maintenance'], desc: 'Needs attention' },
+                    { status: 'Decommissioned', count: decommissioned, color: STATUS_COLORS['Decommissioned'], desc: 'No longer active' },
+                  ].map((item) => (
+                    <div
+                      key={item.status}
+                      className="flex items-center justify-between px-4 py-3 rounded-lg bg-slate-50"
                     >
-                      {pump.status}
-                    </span>
-                  </Link>
-                ))}
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">{item.status}</p>
+                          <p className="text-xs text-slate-400">{item.desc}</p>
+                        </div>
+                      </div>
+                      <span className="text-lg font-bold text-slate-800">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-8">
                 <Cog className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm text-slate-500">No pumps added yet</p>
+                <p className="text-sm text-slate-500">No pumps registered yet</p>
                 <Link
                   href="/pumps/create"
                   className="inline-block mt-3 text-sm text-brand-600 hover:text-brand-700 font-medium"
@@ -260,10 +280,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Predictions */}
+      {/* Prediction Trends */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">Recent Predictions</h2>
+          <h2 className="text-base font-semibold text-slate-800">Prediction Trends</h2>
           <Link
             href="/prediction-logs"
             className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
@@ -271,42 +291,57 @@ export default function DashboardPage() {
             View All <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        <div className="overflow-x-auto">
+        <div className="p-6">
           {recentLogs.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-100">
-                  <th className="text-left px-6 py-3 font-medium">Pump ID</th>
-                  <th className="text-left px-6 py-3 font-medium">Temp</th>
-                  <th className="text-left px-6 py-3 font-medium">Vibration</th>
-                  <th className="text-left px-6 py-3 font-medium">Pressure</th>
-                  <th className="text-left px-6 py-3 font-medium">Maintenance</th>
-                  <th className="text-left px-6 py-3 font-medium">Confidence</th>
-                  <th className="text-left px-6 py-3 font-medium">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentLogs.map((log) => (
-                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50/50">
-                    <td className="px-6 py-3 text-sm">
-                      <Link href={`/pumps/${log.pump_id}`} className="text-brand-600 hover:underline font-medium">
-                        #{log.pump_id}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-3 text-sm text-slate-600">{log.temperature.toFixed(1)} &deg;C</td>
-                    <td className="px-6 py-3 text-sm text-slate-600">{log.vibration.toFixed(2)}</td>
-                    <td className="px-6 py-3 text-sm text-slate-600">{log.pressure.toFixed(1)} bar</td>
-                    <td className="px-6 py-3">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full border ${maintenanceColor(log.maintenance_required)}`}>
-                        {log.maintenance_required}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 text-sm font-medium">{(log.confidence_score * 100).toFixed(1)}%</td>
-                    <td className="px-6 py-3 text-xs text-slate-400">{formatDate(log.created_at)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={recentLogs
+                    .slice()
+                    .reverse()
+                    .map((log, idx) => ({
+                      name: `#${log.pump_id}`,
+                      confidence: log.confidence_score * 100,
+                      temperature: log.temperature,
+                      maintenance: log.maintenance_required === 'Yes' ? 100 : 0,
+                    }))}
+                  margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#64748b" />
+                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 100]} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 200]} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="confidence"
+                    name="Confidence %"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    dot={{ fill: '#3b82f6', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="temperature"
+                    name="Temperature (°C)"
+                    stroke="#f59e0b"
+                    strokeWidth={2}
+                    dot={{ fill: '#f59e0b', r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <div className="text-center py-12">
               <Activity className="w-10 h-10 text-slate-300 mx-auto mb-3" />
