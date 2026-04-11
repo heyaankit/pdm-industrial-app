@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, status, HTTPException, Query
 from typing import Optional, Annotated, List
 from app.db.base import engine, SessionLocal, Base
 from sqlalchemy.orm import Session
-from app.models.pump import Pump, PumpStatus
+from app.models.pump import Pump, PumpStatus, PumpPredictionLog
 from app.schemas.pump import PumpCreate
 from app.api.v1.endpoints import pump as pump_endpoints
 
@@ -81,6 +81,44 @@ def update_pump_status(pump_id: int, db: db_dependency, status: str = Query(...)
     db.commit()
     db.refresh(pump)
     return pump
+
+
+# Prediction Logs Endpoints
+
+
+@app.get("/pumps/{pump_id}/prediction-logs")
+def get_pump_prediction_logs(pump_id: int, db: db_dependency):
+    """Get all prediction logs for a specific pump."""
+    pump = db.query(Pump).filter(Pump.id == pump_id).first()
+    if not pump:
+        raise HTTPException(status_code=404, detail="Pump not found")
+
+    logs = (
+        db.query(PumpPredictionLog)
+        .filter(PumpPredictionLog.pump_id == pump_id)
+        .order_by(PumpPredictionLog.created_at.desc())
+        .all()
+    )
+    return logs
+
+
+@app.get("/prediction-logs")
+def get_all_prediction_logs(db: db_dependency, pump_id: Optional[int] = None):
+    """Get all prediction logs, optionally filtered by pump_id."""
+    if pump_id:
+        logs = (
+            db.query(PumpPredictionLog)
+            .filter(PumpPredictionLog.pump_id == pump_id)
+            .order_by(PumpPredictionLog.created_at.desc())
+            .all()
+        )
+    else:
+        logs = (
+            db.query(PumpPredictionLog)
+            .order_by(PumpPredictionLog.created_at.desc())
+            .all()
+        )
+    return logs
 
 
 # Home API

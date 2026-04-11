@@ -69,7 +69,16 @@ models/*.pt
 .idea/
 
 # ==========================================
-# 6. ENVIRONMENT & SECRETS
+# 8. HIDDEN FILES (.*)
+# ==========================================
+
+# Ignore all hidden files and directories except .gitignore
+.*
+# Exception for .gitignore (needed for git to work)
+!.gitignore
+
+# ==========================================
+# 9. ENVIRONMENT & SECRETS
 # ==========================================
 
 # Environment variables (Database URLs, API Keys)
@@ -78,3 +87,18 @@ models/*.pt
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# ==========================================
+# 7. NEXT.JS FRONTEND
+# ==========================================
+
+# Node modules (can be reinstalled with npm install)
+frontend/node_modules/
+
+# Next.js build output (can be rebuilt with npm run build)
+frontend/.next/
+frontend/out/
+
+# Build generated files
+frontend/.eslintcache
+frontend/.turbo

@@ -1,63 +1,131 @@
 # Predictive Maintenance API (PDM Industrial App)
 
-A FastAPI-based predictive maintenance system for industrial pumps. The API predicts whether pumps require maintenance based on sensor data and provides detailed breakdown of which factors need attention.
+[![GitHub stars](https://img.shields.io/github/stars/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/network)
+[![GitHub issues](https://img.shields.io/github/issues/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/issues)
+[![License](https://img.shields.io/github/license/heyaankit/pdm-industrial-app)](https://github.com/heyaankit/pdm-industrial-app/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-white)](https://fastapi.tiangolo.com/)
+
+A full-stack predictive maintenance system for industrial pumps with a FastAPI backend and Next.js frontend.
 
 ## Features
 
-- **Create, Read, Update pumps** - Full CRUD operations for pump assets
+- **Full CRUD for pumps** - Create, read, update pump assets
 - **ML-powered predictions** - Predicts maintenance needs based on sensor data
 - **Detailed factor analysis** - Shows exactly which parameters (temperature, vibration, pressure, etc.) are problematic
 - **Status management** - Track pump status (Operational, Under Maintenance, Decommissioned)
+- **Prediction logs** - View history of all predictions
 - **SQLite database** - Simple, file-based database for easy setup
 
 ## Tech Stack
 
+### Backend
 - **FastAPI** - Modern Python web framework
 - **SQLAlchemy** - ORM for database operations
 - **SQLite** - File-based database
 - **Pydantic** - Data validation
 - **Python** - Core language
 
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **Tailwind CSS** - Styling
+- **Recharts** - Data visualization
+- **TypeScript** - Type safety
+
 ## Project Structure
 
 ```
 pdm-industrial-app/
-├── app/                    # FastAPI application
+├── app/                    # FastAPI backend application
 │   ├── main.py            # App entry point & endpoints
 │   ├── api/v1/endpoints/  # API route handlers
 │   ├── models/            # SQLAlchemy models
 │   ├── schemas/           # Pydantic schemas
-│   ├── services/          # Business logic
-│   ├── db/                # Database config
-│   └── core/              # Config & security
+│   ├── services/          # Business logic (feature engineering)
+│   └── db/                # Database config
 ├── ml/pump/               # ML prediction module
 │   ├── predict.py        # Prediction logic with factor analysis
 │   ├── preprocess.py      # Feature preprocessing
 │   └── preprocessing.py  # Colab notebook code
+├── frontend/              # Next.js frontend application
 ├── data/                  # Database (pdm.db)
+├── app_images/            # App screenshots
 ├── dataset/               # Training data
 └── requirements.txt       # Python dependencies
 ```
 
-## Quick Start
+## How to Run Locally
 
-### 1. Install dependencies
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+
+### 1. Clone and setup
 
 ```bash
+git clone https://github.com/heyaankit/pdm-industrial-app.git
+cd pdm-industrial-app
+```
+
+### 2. Set up Python environment
+
+```bash
+# Create virtual environment (optional but recommended)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install Python dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Run the server
+### 3. Start the Backend API
 
 ```bash
+# From project root
 uvicorn app.main:app --reload
 ```
 
-Server runs at: http://127.0.0.1:8000
+The backend runs at: **http://localhost:8000**
 
-### 3. Access API docs
+API documentation available at: **http://localhost:8000/docs**
 
-Open http://127.0.0.1:8000/docs for interactive Swagger documentation
+### 4. Start the Frontend
+
+Open a new terminal:
+
+```bash
+cd pdm-industrial-app/frontend
+npm install
+npm run dev
+```
+
+The frontend runs at: **http://localhost:3000**
+
+### 5. Access the Application
+
+Open your browser and go to **http://localhost:3000**
+
+The frontend is pre-configured to connect to the backend at **http://localhost:8000** (configured in `frontend/.env.local`).
+
+## App Screenshots
+
+| Dashboard | Pumps List |
+|-----------|-------------|
+| ![Dashboard](app_images/dashboard.png) | ![Pumps](app_images/pumps.png) |
+
+| New Pump | Predictions |
+|----------|-------------|
+| ![New Asset](app_images/new_asset.png) | ![Prediction](app_images/prediction1.png) |
+
+| Prediction with Details | Prediction Logs |
+|------------------------|-----------------|
+| ![Prediction 2](app_images/prediction2.png) | ![Logs](app_images/prediction_logs.png) |
+
+| Filtered Pumps | Filtered Logs |
+|----------------|---------------|
+| ![Filtered Pumps](app_images/filtered_pumps.png) | ![Filtered Logs](app_images/filtered_logs.png) |
 
 ## API Endpoints
 
@@ -77,6 +145,14 @@ Open http://127.0.0.1:8000/docs for interactive Swagger documentation
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/v1/predict` | Get maintenance prediction |
+
+### Prediction Logs
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/prediction-logs` | Get all prediction logs |
+| GET | `/prediction-logs?pump_id=1` | Get logs filtered by pump |
+| GET | `/pumps/{id}/prediction-logs` | Get logs for specific pump |
 
 **Request body:**
 ```json
@@ -126,7 +202,7 @@ The API uses a scoring system based on domain knowledge to predict maintenance:
 
 Each failure type has a score calculated from sensor values against thresholds (derived from dataset quantiles). If any score >= 3, maintenance is required.
 
-## Example Usage
+## Example Usage (cURL)
 
 ### Create a pump
 ```bash
@@ -147,6 +223,11 @@ curl -X POST http://localhost:8000/api/v1/predict \
 curl -X PATCH "http://localhost:8000/pumps/1/status?status=Under%20Maintenance"
 ```
 
+### Get all prediction logs
+```bash
+curl -s http://localhost:8000/prediction-logs
+```
+
 ## Database
 
 The database file is stored at `data/pdm.db`. You can inspect it:
@@ -159,12 +240,9 @@ sqlite3 data/pdm.db "SELECT * FROM pump_prediction_logs;"
 ## Requirements
 
 - Python 3.10+
-- FastAPI
-- SQLAlchemy
-- Pydantic
-- Uvicorn
+- Node.js 18+
 
-See `requirements.txt` for full list.
+See `requirements.txt` for Python dependencies.
 
 ## License
 
