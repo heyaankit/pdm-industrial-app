@@ -111,21 +111,11 @@ The frontend is pre-configured to connect to the backend at **http://localhost:8
 
 ## App Screenshots
 
-| Dashboard | Pumps List |
-|-----------|-------------|
-| ![Dashboard](app_images/dashboard.png) | ![Pumps](app_images/pumps.png) |
+![Dashboard](app_images/dashboard.png)
 
-| New Pump | Predictions |
-|----------|-------------|
-| ![New Asset](app_images/new_asset.png) | ![Prediction](app_images/prediction1.png) |
+![Pumps](app_images/pumps.png)
 
-| Prediction with Details | Prediction Logs |
-|------------------------|-----------------|
-| ![Prediction 2](app_images/prediction2.png) | ![Logs](app_images/prediction_logs.png) |
-
-| Filtered Pumps | Filtered Logs |
-|----------------|---------------|
-| ![Filtered Pumps](app_images/filtered_pumps.png) | ![Filtered Logs](app_images/filtered_logs.png) |
+View all screenshots: [app_images/](app_images/)
 
 ## API Endpoints
 
