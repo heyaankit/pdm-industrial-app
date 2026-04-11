@@ -2,32 +2,35 @@
 
 from pydantic import BaseModel, Field
 from datetime import datetime
-from models import PumpStatus, MaintenanceRequired
-from typing import Any, Optional 
+from app.models.pump import PumpStatus, MaintenanceRequired
+from typing import Any, Optional
 
 # Pump's Schema
+
 
 class PumpCreate(BaseModel):
     name: str = Field(..., max_length=50, description="Pump name")
     location: str = Field(..., max_length=100, description="Pump's location")
-    
+
+
 class PumpResponse(BaseModel):
-    id: int 
+    id: int
     name: str
     location: str
     installation_date: datetime
     status: PumpStatus
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}
+
 
 class PumpUpdate(BaseModel):
     name: Optional[str]
     location: Optional[str]
     status: Optional[PumpStatus]
 
+
 # Prediction Log Schema
+
 
 class PredictionLogCreate(BaseModel):
     pump_id: int = Field(..., ge=1)
@@ -37,6 +40,7 @@ class PredictionLogCreate(BaseModel):
     flow_rate: float = Field(...)
     rpm: float = Field(...)
     operational_hours: float = Field(...)
+
 
 class PredictionLogResponse(BaseModel):
     id: int
@@ -51,9 +55,8 @@ class PredictionLogResponse(BaseModel):
     confidence_score: float
     created_at: datetime
 
-    model_config = {
-        'from_attributes': True
-    }
+    model_config = {"from_attributes": True}
+
 
 class PredictionLogUpdate(BaseModel):
     pump_id: Optional[int] = Field(..., ge=1)
