@@ -36,7 +36,7 @@ A full-stack predictive maintenance system for industrial pumps with a FastAPI b
 
 ## App Screenshots
 
-![Dashboard](app_images/dashboard.png)
+![Dashboard](app_images/dashboard2.png)
 
 ![Pumps](app_images/pumps.png)
 
