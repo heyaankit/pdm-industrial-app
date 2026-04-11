@@ -14,14 +14,13 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import { apiClient } from '@/lib/api';
 import { Pump, PumpPredictionLog } from '@/lib/types';
@@ -183,12 +182,6 @@ export default function DashboardPage() {
                           fontSize: '12px',
                         }}
                       />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={36}
-                        iconType="circle"
-                        formatter={(value) => <span className="text-xs text-slate-600">{value}</span>}
-                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -280,82 +273,59 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Prediction Trends */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-base font-semibold text-slate-800">Prediction Trends</h2>
-          <Link
-            href="/prediction-logs"
-            className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
-          >
-            View All <ArrowRight className="w-4 h-4" />
-          </Link>
+      {/* Maintenance Alerts by Pump */}
+      {maintenanceAlerts > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <h2 className="text-base font-semibold text-slate-800">Maintenance Alerts by Pump</h2>
+            <Link
+              href="/prediction-logs"
+              className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
+            >
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="p-6">
+            {(() => {
+              const pumpAlerts = allLogs
+                .filter(log => log.maintenance_required === 'Yes')
+                .reduce((acc, log) => {
+                  acc[log.pump_id] = (acc[log.pump_id] || 0) + 1;
+                  return acc;
+                }, {} as Record<number, number>);
+              
+              const chartData = Object.entries(pumpAlerts)
+                .map(([pumpId, count]) => ({
+                  name: `#${pumpId}`,
+                  alerts: count,
+                }))
+                .sort((a, b) => b.alerts - a.alerts)
+                .slice(0, 10);
+
+              return (
+                <div className="h-56">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis type="number" tick={{ fontSize: 12 }} stroke="#64748b" />
+                      <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#64748b" width={50} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#fff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                        }}
+                      />
+                      <Bar dataKey="alerts" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              );
+            })()}
+          </div>
         </div>
-        <div className="p-6">
-          {recentLogs.length > 0 ? (
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={recentLogs
-                    .slice()
-                    .reverse()
-                    .map((log, idx) => ({
-                      name: `#${log.pump_id}`,
-                      confidence: log.confidence_score * 100,
-                      temperature: log.temperature,
-                      maintenance: log.maintenance_required === 'Yes' ? 100 : 0,
-                    }))}
-                  margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#64748b" />
-                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 100]} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} stroke="#64748b" domain={[0, 200]} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="confidence"
-                    name="Confidence %"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    dot={{ fill: '#3b82f6', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="temperature"
-                    name="Temperature (°C)"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    dot={{ fill: '#f59e0b', r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <Activity className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm text-slate-500">No predictions run yet</p>
-              <Link
-                href="/predictions"
-                className="inline-block mt-3 text-sm text-brand-600 hover:text-brand-700 font-medium"
-              >
-                Run your first prediction
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
